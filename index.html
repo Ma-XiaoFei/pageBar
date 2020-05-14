@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagebar</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        #pagebar {
+            width: 800px;
+            margin: 20px auto;
+            text-align: center;
+
+
+        }
+
+        #pagebar ul {
+            clear: both;
+            overflow: hidden;
+            padding: 0;
+            margin: 0 auto;
+            user-select: none;
+
+        }
+
+        #pagebar li {
+            cursor: pointer;
+            list-style: none;
+            float: left;
+            min-width: 30px;
+            height: 30px;
+            font-size: 13px;
+            line-height: 30px;
+            border: 1px solid #ccc;
+            text-align: center;
+            vertical-align: middle;
+            border-right: 0;
+
+        }
+
+        #pagebar li:hover {
+            color: rgb(24, 122, 214);
+        }
+
+        #pagebar li:active {
+            border: 1px solid rgb(24, 122, 214);
+        }
+        #pagebar li.active{
+            background-color: rgb(24, 122, 214);
+            color: #fff;
+        }
+        #pagebar button:hover {
+            color: rgb(24, 122, 214);
+            ;
+        }
+
+        #pagebar button {
+            float: left;
+            width: 30px;
+            height: 30px;
+            color: rgb(179, 162, 162);
+            border: 1px solid #ccc;
+            outline: none;
+            cursor: pointer;
+        }
+        #pagebar button:disabled{
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        #pagebar button.prev {
+            border-right: none;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div>
+        <!-- pagination -->
+        <div id="pagebar">
+            <ul>
+                <button type="button" class="prev" disabled> < </button> 
+                    <!-- <li class="number active" >1</li>
+                    <li class="number">2</li> -->
+                <button type="button" class="next"> > </button>
+            </ul>
+        </div>
+    </div>
+    <script>
+        
+        function Pagination(options) {
+            this.total = options.total;
+            this.size = options.size;
+            this.startSize = options.startSize || 0;
+            this.pageChange = options.pageChange;
+            this.pageBar = document.getElementById('pagebar');
+            this.prev = this.pageBar.querySelector('.prev');
+            this.next = this.pageBar.querySelector('.next');
+            this.str = ``;
+            this.totalNum = Math.ceil(this.total/this.size)
+            
+            this.initPages();
+            
+            let pageBars = this.pageBar.getElementsByClassName('number');
+            let pageActive = this.pageBar.getElementsByClassName('active')
+            
+            document.querySelector('.prev').onclick = function(){
+                pageActive[0].previousElementSibling.click()
+            }
+            document.querySelector('.next').onclick = function(){
+                pageActive[0].nextElementSibling.click()
+            }
+
+           
+           let _this = this;
+            Array.from(pageBars).forEach(function (item, index) {
+                item.onclick = function () {
+                    pageActive[0].classList.remove('active');
+                    this.classList.add('active')
+                    let activeVal = pageActive[0].innerText;
+
+                    if (activeVal > 6){
+                        Array.from(document.querySelectorAll('.number')).forEach(function(item){
+                            item.remove();
+                        })
+                        new Pagination(Object.assign(options, {startSize: activeVal}))
+                    }
+                    if (activeVal === '1'){
+                        _this.prev.setAttribute('disabled',true);
+                    } else {
+                        _this.prev.removeAttribute('disabled');
+                    }
+                    if (this.innerText === this.total){
+                        _this.next.querySelector('.next').setAttribute('disabled',true)
+                    }
+                    _this.pageChange(this.innerText) // 页数change
+                }
+            })
+        }
+
+        Pagination.prototype.initPages = function(){
+            let maxPage = this.total > 10 ? this.totalNum: this.total;
+            let n = 0;
+            let s = (this.startSize - 6)<0 ? 0 : this.startSize - 6;
+            this.totalNum
+            for (let i = s; true; i++){
+                if (i>this.total -10) break
+                if (n > (9>this.totalNum?this.totalNum-1:9 )) break;
+                this.str += `<li class="number ${i+1===1?'active':''}" ${i+1 === 1 ? 'disabled':''}>${i+1}</li>`
+                n++;
+            }
+            let c = document.createElement('div');
+            c.innerHTML = this.str
+            this.prev.after(c)
+            Array.from(document.getElementsByClassName('number')).forEach(item=>{
+                if (item.innerHTML === this.startSize){
+                    item.classList.add('active');
+                }
+            })
+        }
+
+
+        
+
+
+        new Pagination({
+            total: 1150, //总数量
+            size: 10, //一页的数量
+            pageChange: function(v){
+                console.log(v)
+            }
+        })
+    </script>
+</body>
+
+</html>
