@@ -87,6 +87,8 @@
     <div>
         <!-- pagination -->
         <div id="pagebar"></div>
+        
+        <div id="selectedVal"></div>
     </div>
 
     <script src="./pageBar.js"></script>
@@ -97,6 +99,7 @@
             size: 10, //一页的数量,
             currentPage: 1, //当前页
             pageChange: function (v) {
+                selectedVal.innerText = v
                 console.log(v)
             }
         })
